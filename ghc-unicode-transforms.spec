@@ -6,7 +6,7 @@
 Summary:	Unicode normalization
 Name:		ghc-%{pkgname}
 Version:	0.3.6
-Release:	1
+Release:	2
 License:	BSD
 Group:		Development/Languages
 #Source0Download: http://hackage.haskell.org/package/unicode-transforms
