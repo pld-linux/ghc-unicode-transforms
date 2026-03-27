@@ -4,6 +4,7 @@
 #
 %define		pkgname	unicode-transforms
 Summary:	Unicode normalization
+Summary(pl.UTF-8):	Normalizacja Unicode
 Name:		ghc-%{pkgname}
 Version:	0.3.6
 Release:	2
@@ -13,16 +14,33 @@ Group:		Development/Languages
 Source0:	http://hackage.haskell.org/package/%{pkgname}-%{version}/%{pkgname}-%{version}.tar.gz
 # Source0-md5:	84c76482be51c0e3b90b27999e629f0e
 URL:		http://hackage.haskell.org/package/unicode-transforms
-BuildRequires:	ghc >= 6.12.3
+BuildRequires:	ghc >= 7.8.1
+BuildRequires:	ghc-base >= 4.7
+BuildRequires:	ghc-base < 5
 BuildRequires:	ghc-bitarray >= 0.0.1
+BuildRequires:	ghc-bitarray < 0.1
+BuildRequires:	ghc-bytestring >= 0.9
+BuildRequires:	ghc-bytestring < 0.11
+BuildRequires:	ghc-text >= 1.1.1
+BuildRequires:	ghc-text < 1.3
 %if %{with prof}
-BuildRequires:	ghc-prof
+BuildRequires:	ghc-prof >= 7.8.1
+BuildRequires:	ghc-base-prof >= 4.7
+BuildRequires:	ghc-base-prof < 5
 BuildRequires:	ghc-bitarray-prof >= 0.0.1
+BuildRequires:	ghc-bitarray-prof < 0.1
+BuildRequires:	ghc-bytestring-prof >= 0.9
+BuildRequires:	ghc-bytestring-prof < 0.11
+BuildRequires:	ghc-text-prof >= 1.1.1
+BuildRequires:	ghc-text-prof < 1.3
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.608
 %requires_eq	ghc
-Requires:	ghc-bitarray >= 0.0.1
 Requires(post,postun):	/usr/bin/ghc-pkg
+Requires:	ghc-base >= 4.7
+Requires:	ghc-bitarray >= 0.0.1
+Requires:	ghc-bytestring >= 0.9
+Requires:	ghc-text >= 1.1.1
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # debuginfo is not useful for ghc
@@ -34,16 +52,22 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description
 Fast Unicode 12.1.0 normalization in Haskell (NFC, NFKC, NFD, NFKD).
 
+%description -l pl.UTF-8
+Szybka normalizacja Unicode 12.1.0 w Haskellu (NFC, NFKC, NFD, NFKD).
+
 %package prof
 Summary:	Profiling %{pkgname} library for GHC
 Summary(pl.UTF-8):	Biblioteka profilująca %{pkgname} dla GHC
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	ghc-base-prof >= 4.7
 Requires:	ghc-bitarray-prof >= 0.0.1
+Requires:	ghc-bytestring-prof >= 0.9
+Requires:	ghc-text-prof >= 1.1.1
 
 %description prof
-Profiling %{pkgname} library for GHC.  Should be installed when
-GHC's profiling subsystem is needed.
+Profiling %{pkgname} library for GHC. Should be installed when GHC's
+profiling subsystem is needed.
 
 %description prof -l pl.UTF-8
 Biblioteka profilująca %{pkgname} dla GHC. Powinna być zainstalowana
@@ -61,6 +85,7 @@ runhaskell Setup.hs configure -v2 \
 	--docdir=%{_docdir}/%{name}-%{version}
 
 runhaskell Setup.hs build
+
 runhaskell Setup.hs haddock --executables
 
 %install
@@ -71,8 +96,7 @@ runhaskell Setup.hs copy --destdir=$RPM_BUILD_ROOT
 
 # work around automatic haddock docs installation
 %{__rm} -rf %{name}-%{version}-doc
-cp -a $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version} %{name}-%{version}-doc
-%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
+%{__mv} $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version} %{name}-%{version}-doc
 
 runhaskell Setup.hs register \
 	--gen-pkg-config=$RPM_BUILD_ROOT%{_libdir}/%{ghcdir}/package.conf.d/%{pkgname}.conf
